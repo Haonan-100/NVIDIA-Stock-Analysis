@@ -1,108 +1,148 @@
+
 # NVIDIA Stock Forecasting and Analysis
 
-This repository provides a comprehensive analysis and forecasting project focused on **NVIDIA (NVDA) stock**. It combines data cleaning, feature engineering, correlation analysis, and multiple predictive models (including ARIMA, SARIMAX, GARCH, and LSTM with Attention) to understand NVIDIA’s historical performance and forecast its future price movements.
+This repository provides an end‑to‑end pipeline—data cleaning, feature engineering, classical econometrics, sentiment fusion, and deep learning—for **NVIDIA (NVDA)** price forecasting.
 
 ## Table of Contents
-- [Project Overview](#project-overview)
-- [Data](#data)
-- [Key Features and Models](#key-features-and-models)
-- [Environment and Dependencies](#environment-and-dependencies)
-- [Usage](#usage)
-- [Results and Visualization](#results-and-visualization)
-- [References](#references)
+1. [Project Overview](#project-overview)  
+2. [Data](#data)  
+3. [Environment and Setup](#environment-and-setup)
+4. [Usage](#usage)  
+5. [Methods](#methods)  
+   - [Data Pre-processing & Feature Selection](#data-pre-processing-feature-selection)  
+   - [Classical Time-Series Models](#classical-time-series-models)  
+   - [Sentiment Integration](#sentiment-integration)  
+   - [Hybrid RF → LSTM-Attention](#hybrid-rf-lstm-attention)  
+6. [Results](#results)  
+7. [Figures](#figures)  
+8. [References](#references)  
+9. [License](#license)
+
 
 ---
 
 ## Project Overview
-
-NVIDIA is a leading technology company whose stock shows notable performance and volatility. This project aims to:
-1. Predict NVDA stock prices using a variety of models ranging from time series methods (ARIMA/SARIMAX/GARCH) to deep learning architectures (LSTM, Bidirectional LSTM, and Attention).
-2. Identify important market factors (e.g., S&P 500, Google, Microsoft, Intel, inflation rates) and their correlation with NVIDIA’s movements.
-3. Incorporate sentiment or event impact scores (`ImpactScore`) to capture the effect of market news and critical events on price dynamics.
-
-## Data
-
-- **Primary CSV Files**: 
-  - `cleaned_data.csv` and `merged_with_impact_score.csv` contain the cleaned and merged historical data.
-  - Each row typically includes information such as `Date`, `NVDA_adj_close`, `SP500`, `Google_Adj_Close`, `MSFT_Adj_Close`, `INTC_Adj_Close`, and additional fields like `ImpactScore`.
-- **Source**: 
-  - Yahoo Finance (historical stock data for NVDA, S&P 500, etc.)
-  - World Bank/FRED (macro indicators)
-  - Custom scripts or third-party data for event-driven sentiment/impact score.
-
-## Key Features and Models
-
-1. **Feature Engineering**  
-   - Daily returns, log returns, short-term (20-day) and long-term (80-day) moving averages, etc.
-   - Principal Component Analysis (PCA) to reduce dimensionality.
-   - Lasso and Random Forest for feature importance scoring.
-
-2. **Time Series Models**  
-   - **ARIMA/SARIMAX** for autocorrelation-based forecasting.
-   - **GARCH** (via `arch` library) for volatility modeling and capturing financial time series volatility clustering.
-
-3. **Deep Learning Models**  
-   - **LSTM / Bidirectional LSTM** to handle long-term dependencies in time-series.
-   - **Attention mechanism** to focus on the most relevant time steps and improve predictive accuracy.
-   - Comparison with a baseline T-2 model (using the price from two days ago as a naive forecast).
-
-## Environment and Dependencies
-
-- **Python 3.x**  
-- Key packages:  
-  - `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`  
-  - `statsmodels`, `arch`  
-  - `tensorflow` (Keras)  
-  - `PyPDF2` (optional, if you need to parse PDF files)  
-- It is recommended to use a virtual environment or `conda` to manage dependencies:
-  ```bash
-  conda create -n nvda_env python=3.9
-  conda activate nvda_env
-  pip install -r requirements.txt
-  ```
-
-## Usage
-
-1. **Clone the Repository**  
-   ```bash
-   git clone https://github.com/YourUsername/NVIDIA-Forecasting.git
-   cd NVIDIA-Forecasting
-   ```
-2. **Place the Data**  
-   - Ensure that `cleaned_data.csv`, `merged_with_impact_score.csv`, and other relevant CSV files are located at the correct file paths specified in the code.
-3. **Run the Code**  
-   - The main script is `Total Code.py`. You can execute it directly:
-     ```bash
-     python "Total Code.py"
-     ```
-   - Various plots, metrics, and model summaries will be printed or displayed in the console/plots.
-4. **Inspect the Results**  
-   - Model predictions, MSE, RMSE, MAE, R², etc. are shown in the console output.
-   - Visualizations (e.g., correlation heatmaps, forecast vs. actual plots) are generated to illustrate how well each model captures NVDA price movements.
-
-## Results and Visualization
-
-- **ARIMA / SARIMAX**: Demonstrates baseline time-series performance; includes residual diagnostics and confidence intervals.
-- **GARCH**: Helpful for modeling volatility and capturing periods of high price fluctuations.
-- **LSTM + Attention**: Showcases the potential for improved accuracy by leveraging deep learning architectures, capturing nonlinear dynamics and long-range dependencies.
-
-Example forecasting visualization:
-```
-Observed (Blue) vs. Forecast (Red) lines
-Confidence intervals (Pink area)
-```
-A comparison with a naive T-2 baseline is also provided to highlight the added value of advanced models.
-
-## References
-
-- Xiao, Q., & Ihnaini, B. (2023). *Stock trend prediction using sentiment analysis.* PeerJ Computer Science.  
-- [Yahoo Finance](https://finance.yahoo.com/quote/NVDA/news/)  
-- Mnih, V., et al. (2016). *Asynchronous Methods for Deep Reinforcement Learning*, arXiv:1607.01958.  
+1. **Forecast** NVDA prices with ARIMA, SARIMAX, GARCH, and a hybrid Random‑Forest ➔ Bidirectional LSTM + Attention network.  
+2. **Explain** drivers such as S&P 500, Google, Microsoft, Intel, macro factors, and a news‑based `ImpactScore`.  
+3. **Compare** each layer of model complexity against a simple T‑2 baseline (price from two days prior).
 
 ---
 
-### License
+## Data
+| File | Columns (sample) | Source |
+|------|------------------|--------|
+| `cleaned_data.csv` | `Date, NVDA_adj_close, SP500, Google_Adj_Close, …` | Yahoo Finance, World Bank, FRED |
+| `merged_with_impact_score.csv` | above + `ImpactScore` | News sentiment scrape (VADER / FinBERT) |
 
-This project is for educational and research purposes. Refer to individual data sources for license and usage details.
+---
 
+## Environment and Setup
+```bash
+conda create -n nvda_env python=3.9
+conda activate nvda_env
+pip install -r requirements.txt
+```
+
+Key libraries – `pandas  •  numpy  •  scikit-learn  •  statsmodels  •  arch  •  tensorflow (keras)`
+
+---
+
+## Usage
+### 1 . Clone
+```bash
+git clone https://github.com/YourUsername/NVIDIA-Forecasting.git
+cd NVIDIA-Forecasting
+```
+
+### 2 . Drop data into `data/`
+```bash
+mkdir -p data
+# place cleaned_data.csv and merged_with_impact_score.csv here
+```
+
+### 3 . Run full notebook‑style script **(quick start)**
+```bash
+python "Total Code.py"
+```
+
+### 4 . Modular workflow **(recommended)**
+| Step | Script | Core Techniques |
+|------|--------|-----------------|
+| ① Pre‑processing | `src/data_prep.py` | drop NA/∞, `StandardScaler`, add 20‑/80‑day MA |
+| ② Feature ranking | `src/feature_select.py` | Pearson corr, **PCA 95 %**, **LassoCV**, **Random Forest** |
+| ③ ARIMA | `src/arima.py` | ADF test → ARIMA(4,1,0) rolling forecast |
+| ④ SARIMAX & GARCH | `src/sarimax_garch.py` | exog = `[SP500_log, ImpactScore, INTC_ret]` |
+| ⑤ Sentiment scrape | `src/news_sentiment.py` | VADER / FinBERT → daily `ImpactScore` |
+| ⑥ Deep model | `src/lstm_attention.py` | RF meta‑feature ➔ 2×50 bi‑LSTM + Attention |
+| ⑦ Plots | `src/visualization.py` | saves all figures to `docs/img/` |
+
+Execute all:
+```bash
+for m in data_prep feature_select arima sarimax_garch lstm_attention visualization
+do
+  python -m src.$m
+done
+```
+
+Artifacts (models, metrics JSON, PNGs) appear in `outputs/` and `docs/img/`.
+
+---
+
+## Methods
+
+### Data Pre‑processing & Feature Selection
+* Remove nulls/inf, scale features.  
+* **PCA** keeps components explaining ≥ 95 % variance.  
+* **LassoCV** (α cross‑validated) + **Random Forest** importance confirm top drivers: `SP500`, `MSFT_Adj_Close`, `ImpactScore`, 20‑/80‑day MA.
+
+### Classical Time‑Series Models
+* **ARIMA(4,1,0)** chosen via ACF/PACF and AIC grid search.  
+* **SARIMAX(1,0,1)(0,1,1,12)** with exogenous factors.  
+* **GARCH(1,1)** captures volatility clustering in log‑returns.
+
+### Sentiment Integration
+Daily news are scored; `ImpactScore` fed as an exogenous regressor and shown to correlate 0.43 with next‑day return.
+
+### Hybrid RF → LSTMAttention
+* Random Forest predictions appended as an extra feature.  
+* Model: *Input → [bi‑LSTM × 2] → Attention → LSTM → Dense*  
+* Regularised by Dropout 0.3 and L2 0.01, EarlyStopping patience 10.
+
+---
+
+## Results
+| Model | Inputs | Best Test Metric | Baseline (T‑2) |
+|-------|--------|------------------|----------------|
+| ARIMA(4,1,0) | Close | MSE 34.2 | — |
+| SARIMAX | Close + exog | MSE 22.5 | — |
+| GARCH(1,1) | log‑σ² | LLH ↑ –2156 | — |
+| **LSTM‑Attention** | 20 features, *time_steps = 2* | **MAE 2.42** | 3.44 |
+
+* LSTM reduces MAE by **32 %** vs. baseline.  
+* SARIMAX halves ARIMA error by adding macro + sentiment.  
+* Residuals from SARIMAX nearly i.i.d.; tails addressed by GARCH.
+
+---
+
+## Figures
+| Description | Image |
+|-------------|-------|
+| ACF (lag = 3) confirms short‑memory | ![acf lag3](docs/img/arima_acf_lag3.png) |
+| Full ACF of Adjusted Close | ![acf full](docs/img/arima_acf_full.png) |
+| SARIMAX residual diagnostics | ![sarimax](docs/img/sarimax_diagnostics.png) |
+| Daily return vs. ImpactScore | ![impact](docs/img/sentiment_impact.png) |
+| LSTM vs. Actual vs. Baseline | ![lstm](docs/img/lstm_pred_ts2.png) |
+
+---
+
+## References
+* Xiao, Q., & Ihnaini, B. (2023). *Stock trend prediction using sentiment analysis*. PeerJ Computer Science.  
+* [Yahoo Finance – NVDA](https://finance.yahoo.com/quote/NVDA/news/)  
+* Mnih, V. et al. (2016). *Asynchronous Methods for Deep Reinforcement Learning*. arXiv:1607.01958.
+
+---
+
+## License
+This repository is released for academic and educational use.  
+Please verify licensing terms of individual data sources before commercial deployment.
 ```

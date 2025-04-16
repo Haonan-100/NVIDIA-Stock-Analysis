@@ -176,8 +176,6 @@ The plot compares Actual (blue), LSTM (red), and the naive T‑2 baseline (green
 
 ```
 
----
-
 ## References
 * Xiao, Q., & Ihnaini, B. (2023). *Stock trend prediction using sentiment analysis*. PeerJ Computer Science.  
 * [Yahoo Finance – NVDA](https://finance.yahoo.com/quote/NVDA/news/)  

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-file_path = r"D:\Python Project\Python Learn\5010 project\New Code Data\CleanedData\cleaned_data.csv"
+file_path = r"cleaned_data.csv"
 
 nvidia = pd.read_csv(file_path)
 
@@ -71,7 +71,7 @@ pd.set_option('display.max_rows', None)
 pd.set_option('display.width', 1000)
 pd.set_option('display.float_format', '{:.4f}'.format)
 
-path_processed = r'D:\Python Project\Python Learn\5010 project\New Code Data\CleanedData\cleaned_data.csv'
+path_processed = r'cleaned_data.csv'
 data = pd.read_csv(path_processed, parse_dates=['Date'])
 data.dropna(inplace=True)
 
@@ -147,7 +147,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 import statsmodels.api as sm
 
-file_path = r"D:\Python Project\Python Learn\5010 project\New Code Data\CleanedData\merged_with_impact_score.csv"
+file_path = r"merged_with_impact_score.csv"
 nvidia = pd.read_csv(file_path)
 
 nvidia.dropna(subset=['NVDA_adj_close', 'Date'], inplace=True)
@@ -197,7 +197,7 @@ import statsmodels.api as sm
 from matplotlib import pyplot as plt
 from arch import arch_model
 
-file_path = r"D:\Python Project\Python Learn\5010 project\New Code Data\CleanedData\merged_with_impact_score.csv"
+file_path = r"merged_with_impact_score.csv"
 nvidia = pd.read_csv(file_path)
 
 nvidia.dropna(inplace=True)
@@ -276,7 +276,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 import pandas as pd
 
-data = pd.read_csv(r'D:\Python Project\Python Learn\5010 project\New Code Data\CleanedData\merged_with_impact_score.csv')
+data = pd.read_csv(r'merged_with_impact_score.csv')
 data['Date'] = pd.to_datetime(data['Date'], infer_datetime_format=True)
 data.sort_values('Date', inplace=True)
 

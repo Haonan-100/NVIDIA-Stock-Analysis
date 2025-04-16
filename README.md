@@ -174,7 +174,6 @@ The plot compares Actual (blue), LSTM (red), and the naive T‑2 baseline (green
 * SARIMAX halves ARIMA’s error by injecting macro + sentiment.  
 * Residual heavy tails in SARIMAX are mostly neutralised after the GARCH layer.
 
-```
 
 ## References
 * Xiao, Q., & Ihnaini, B. (2023). *Stock trend prediction using sentiment analysis*. PeerJ Computer Science.  
